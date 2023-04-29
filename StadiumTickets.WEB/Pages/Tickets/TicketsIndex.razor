@@ -7,8 +7,8 @@
     <div class="card">
         <div class="card-header">
             <span>
-                <i class="oi oi-list"></i> Categorías
-                <a class="btn btn-sm btn-primary float-end" @onclick=@(() => ShowModal())><i class="oi oi-plus"></i> Adicionar Categoría</a>
+                <i class="oi oi-list"></i> Validación de tickets
+                @*<a class="btn btn-sm btn-primary float-end" @onclick=@(() => ShowModal())><i class="oi oi-plus"></i> Adicionar Categoría</a>*@
             </span>
         </div>
         <div class="card-body">
@@ -30,15 +30,15 @@
     public Ticket? ticket { get; set; }
     public int? ticketId { get; set; } = null;
 
-    //[CascadingParameter]
-    //IModalService Modal { get; set; } = default!;
+    [CascadingParameter]
+    IModalService Modal { get; set; } = default!;
 
     protected async override Task OnInitializedAsync()
     {
         await LoadAsync();
     }
 
-    private async Task ShowModal(int id = 0, bool isEdit = false)
+    private async Task ShowModal()
     {
         //IModalReference modalReference;
 
@@ -70,7 +70,8 @@
                 ticket = responseHppt.Response!;
                 if (ticket != null)
                 {
-                    //modalReference = Modal.Show<TicketEdit>(string.Empty, new ModalParameters().Add("ticketId", ticketId));
+                    IModalReference modalReference;
+                    modalReference = Modal.Show<TicketConfirm>(string.Empty, new ModalParameters().Add("ticketId", ticketId));
                 }
                 else
                 {
@@ -79,7 +80,7 @@
                         if (responseHppt.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
                         {
                             var mensajeError = await responseHppt.GetErrorMessageAsync();
-                            await sweetAlertService.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+                            await sweetAlertService.FireAsync("Error", "Boleta no válida", SweetAlertIcon.Error);
                             return;
                         }
                     }

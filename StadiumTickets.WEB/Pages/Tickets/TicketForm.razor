@@ -1,0 +1,104 @@
+﻿@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+<NavigationLock OnBeforeInternalNavigation="OnBeforeInternalNavigation" />
+<EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit">
+<DataAnnotationsValidator />
+    <div class="mb-3">
+        <label>ConfirmarTicket:</label>
+        <div class="mb-3">
+        <label># Boleta:</label>
+        <label>@Ticket.Id</label>
+        </div>
+        <div class="mb-3">
+            <label>Entradas:</label>
+            <div>
+                <select class="form-select" @onchange="(x) => OptionSelected(x)">
+                    <option value="0">-- Seleccione una entrada --</option>
+                    <option value="@Entrances.Norte">Norte</option>
+                    <option value="@Entrances.Occidental">Occidental</option>
+                    <option value="@Entrances.Oriental">"Oriental</option>
+                    <option value="@Entrances.Sur">Sur</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <button class="btn btn-primary" type="submit">Validar boleta</button>
+    <button class="btn btn-success" @onclick="ReturnAction">Regresar</button>
+    </EditForm>
+@code {
+    private EditContext editContext = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public Ticket Ticket { get; set; } = null!;
+
+    private string? entranceName { get; set; } = null;
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback OnValidSubmit { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback ReturnAction { get; set; }
+
+    public bool FormPostedSuccessfully { get; set; }
+
+    protected override void OnInitialized()
+    {
+        editContext = new(Ticket);
+    }
+
+    private async Task OnBeforeInternalNavigation(LocationChangingContext context)
+    {
+        var formWasMofied = editContext.IsModified();
+        if (!formWasMofied || FormPostedSuccessfully)
+        {
+            return;
+        }
+
+        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
+            {
+                Title = "Confirmación",
+                Text = "¿Deseas abandonar la página y perder los cambios?",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true,
+                CancelButtonText = "No",
+                ConfirmButtonText = "Si"
+            });
+
+        var confirm = !string.IsNullOrEmpty(result.Value);
+        if (confirm)
+        {
+            return;
+        }
+
+        context.PreventNavigation();
+    }
+
+    private async Task ConfirmTicketAsync()
+    {
+        var tick = new Ticket()
+        {
+            UseDate = DateTime.Now,
+            Used = true,
+                Entrance = entranceName
+        };
+
+        //var responseHttp = await repository.Put("/api/cities", city);
+        //if (responseHttp.Error)
+        //{
+        //    var message = await responseHttp.GetErrorMessageAsync();
+        //    await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+        //    return;
+        //}
+
+    }
+
+    private async Task OptionSelected(ChangeEventArgs entrance)
+    {
+        Ticket.Entrance = entrance.Value.ToString();
+        Ticket.Used = true;
+        Ticket.UseDate = DateTime.Now;
+    }
+}
