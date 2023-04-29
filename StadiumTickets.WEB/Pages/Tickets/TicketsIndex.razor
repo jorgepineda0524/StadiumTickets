@@ -70,6 +70,11 @@
                 ticket = responseHppt.Response!;
                 if (ticket != null)
                 {
+                    if (ticket.Used)
+                    {
+                        await sweetAlertService.FireAsync("Warning", $"Su boleta ya fue usada a las {ticket.UseDate?.ToString("hh:mm")} en la puerta {ticket.Entrance}", SweetAlertIcon.Error);
+                        return;
+                    }
                     IModalReference modalReference;
                     modalReference = Modal.Show<TicketConfirm>(string.Empty, new ModalParameters().Add("ticketId", ticketId));
                 }

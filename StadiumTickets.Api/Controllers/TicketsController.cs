@@ -23,7 +23,7 @@ namespace StadiumTickets.Api.Controllers
                 .FirstOrDefaultAsync(x => x.Id == id);
             if (ticket is null)
             {
-                return NotFound("Boleta no válida");
+                return NotFound();
             }
 
             return Ok(ticket);

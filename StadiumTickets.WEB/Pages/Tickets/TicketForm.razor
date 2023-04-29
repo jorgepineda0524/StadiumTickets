@@ -76,25 +76,6 @@
         context.PreventNavigation();
     }
 
-    private async Task ConfirmTicketAsync()
-    {
-        var tick = new Ticket()
-        {
-            UseDate = DateTime.Now,
-            Used = true,
-                Entrance = entranceName
-        };
-
-        //var responseHttp = await repository.Put("/api/cities", city);
-        //if (responseHttp.Error)
-        //{
-        //    var message = await responseHttp.GetErrorMessageAsync();
-        //    await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
-        //    return;
-        //}
-
-    }
-
     private async Task OptionSelected(ChangeEventArgs entrance)
     {
         Ticket.Entrance = entrance.Value.ToString();

@@ -52,7 +52,7 @@ else
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
             return;
         }
-        await sweetAlertService.FireAsync("Success", "Su boleta ha sido registrada exitosamente", SweetAlertIcon.Error);
+        await sweetAlertService.FireAsync("Boleta válida", "Su boleta ha sido registrada exitosamente", SweetAlertIcon.Success);
         await BlazoredModal.CloseAsync(ModalResult.Ok());
         Return();
     }
