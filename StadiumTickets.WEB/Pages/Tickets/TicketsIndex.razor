@@ -1,0 +1,104 @@
+﻿@page "/tickets"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+
+<Body>
+    <div class="card">
+        <div class="card-header">
+            <span>
+                <i class="oi oi-list"></i> Categorías
+                <a class="btn btn-sm btn-primary float-end" @onclick=@(() => ShowModal())><i class="oi oi-plus"></i> Adicionar Categoría</a>
+            </span>
+        </div>
+        <div class="card-body">
+            <div class="mb-2" style="display: flex; flex-wrap:wrap; align-items: center;">
+                <label># Boleta:</label>
+                <div>
+                    <input style="width: 400px;" type="number" class="form-control" id="titulo" placeholder="Validar boleta..." @bind-value="ticketId" />
+                </div>
+                <div class="mx-1">
+                    <button type="button" class="btn btn-outline-primary" @onclick="ApplyFilterAsync"><i class="oi oi-layers" /> Filtrar</button>
+                    <button type="button" class="btn btn-outline-danger" @onclick="CleanFilterAsync"><i class="oi oi-ban" /> Limpiar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</Body>
+
+@code {
+    public Ticket? ticket { get; set; }
+    public int? ticketId { get; set; } = null;
+
+    //[CascadingParameter]
+    //IModalService Modal { get; set; } = default!;
+
+    protected async override Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task ShowModal(int id = 0, bool isEdit = false)
+    {
+        //IModalReference modalReference;
+
+        //if (isEdit)
+        //{
+        //    modalReference = Modal.Show<CategoryEdit>(string.Empty, new ModalParameters().Add("CategoryId", id));
+        //}
+        //else
+        //{
+        //    modalReference = Modal.Show<CategoryCreate>();
+        //}
+
+        //var result = await modalReference.Result;
+        //if (result.Confirmed)
+        //{
+        //    await LoadAsync();
+        //}
+    }
+
+    private async Task LoadAsync()
+    {
+        if (ticketId != null)
+        {
+            string url1 = $"/api/tickets/{ticketId}";
+
+            try
+            {
+                var responseHppt = await repository.Get<Ticket>(url1);
+                ticket = responseHppt.Response!;
+                if (ticket != null)
+                {
+                    //modalReference = Modal.Show<TicketEdit>(string.Empty, new ModalParameters().Add("ticketId", ticketId));
+                }
+                else
+                {
+                    if (responseHppt.Error)
+                    {
+                        if (responseHppt.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+                        {
+                            var mensajeError = await responseHppt.GetErrorMessageAsync();
+                            await sweetAlertService.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+                            return;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await sweetAlertService.FireAsync("Error", ex.Message, SweetAlertIcon.Error);
+            }
+        }
+    }
+
+    private async Task CleanFilterAsync()
+    {
+        ticketId = null;
+    }
+
+    private async Task ApplyFilterAsync()
+    {
+        await LoadAsync();
+    }
+}
