@@ -8,17 +8,16 @@
         <div class="card-header">
             <span>
                 <i class="oi oi-list"></i> Validación de tickets
-                @*<a class="btn btn-sm btn-primary float-end" @onclick=@(() => ShowModal())><i class="oi oi-plus"></i> Adicionar Categoría</a>*@
             </span>
         </div>
         <div class="card-body">
             <div class="mb-2" style="display: flex; flex-wrap:wrap; align-items: center;">
-                <label># Boleta:</label>
+                <label># Boleta: </label>
                 <div>
                     <input style="width: 400px;" type="number" class="form-control" id="titulo" placeholder="Validar boleta..." @bind-value="ticketId" />
                 </div>
                 <div class="mx-1">
-                    <button type="button" class="btn btn-outline-primary" @onclick="ApplyFilterAsync"><i class="oi oi-layers" /> Filtrar</button>
+                    <button type="button" class="btn btn-outline-primary" @onclick="ApplyFilterAsync"><i class="oi-circle-check" /> Filtrar</button>
                     <button type="button" class="btn btn-outline-danger" @onclick="CleanFilterAsync"><i class="oi oi-ban" /> Limpiar</button>
                 </div>
             </div>
@@ -36,26 +35,6 @@
     protected async override Task OnInitializedAsync()
     {
         await LoadAsync();
-    }
-
-    private async Task ShowModal()
-    {
-        //IModalReference modalReference;
-
-        //if (isEdit)
-        //{
-        //    modalReference = Modal.Show<CategoryEdit>(string.Empty, new ModalParameters().Add("CategoryId", id));
-        //}
-        //else
-        //{
-        //    modalReference = Modal.Show<CategoryCreate>();
-        //}
-
-        //var result = await modalReference.Result;
-        //if (result.Confirmed)
-        //{
-        //    await LoadAsync();
-        //}
     }
 
     private async Task LoadAsync()
